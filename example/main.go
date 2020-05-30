@@ -8,8 +8,9 @@ import (
 )
 
 func main() {
-	log.Init(log.DebugLevel)
-	defer log.Close()
+	defer log.Sync()
+
+	log.SetLevel(log.DebugLevel)
 
 	log.Warn("Not Found config file")
 

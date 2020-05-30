@@ -33,9 +33,15 @@ const (
 var logger *zap.Logger
 var suger *zap.SugaredLogger
 var sugerCaller *zap.SugaredLogger
+var loggerLevel zapcore.Level = zapcore.WarnLevel
+
+func init() {
+	// WarnLevel is default
+	defaultInit()
+}
 
 // Init Logger
-func Init(level Level) {
+func defaultInit() {
 	// The bundled Config struct only supports the most common configuration
 	// options. More complex needs, like splitting logs between multiple files
 	// or writing to non-file outputs, require use of the zapcore package.
@@ -46,9 +52,7 @@ func Init(level Level) {
 	// high-priority logs.
 
 	// First, define our level-handling logic.
-	levelEnabler := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl >= zapcore.Level(level)
-	})
+	levelEnabler := zap.LevelEnablerFunc(levelEnablerFunc)
 
 	//highPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 	//	return lvl >= level
@@ -122,6 +126,16 @@ func Init(level Level) {
 	sugerCaller = logger.WithOptions(zap.AddCaller(), zap.AddCallerSkip(1)).Sugar()
 }
 
-func Close() {
+// Sync calls the underlying Core's Sync method, flushing any buffered log
+func Sync() {
 	logger.Sync()
+}
+
+func levelEnablerFunc(lvl zapcore.Level) bool {
+	return lvl >= loggerLevel
+}
+
+// SetLevel of log will been enable
+func SetLevel(level Level) {
+	loggerLevel = zapcore.Level(level)
 }

@@ -58,6 +58,13 @@ func Error(args ...interface{}) {
 	suger.Error(args...)
 }
 
+// ErrorIf log err if not nil
+func ErrorIf(msg string, err error) {
+	if err != nil {
+		sugerCaller.Errorw(msg, "error", err)
+	}
+}
+
 func Errorf(template string, args ...interface{}) {
 	suger.Errorf(template, args...)
 }

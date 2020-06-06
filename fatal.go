@@ -16,17 +16,17 @@ func Fatalv(message string, keysValues ...interface{}) {
 }
 
 // FatalIF if err != nil log error and return true
-func FatalIF(err error) bool {
-	if err != nil {
-		suger.Fatal(err)
-		return true
-	}
+// func FatalIF(err error) bool {
+// 	if err != nil {
+// 		suger.Fatal(err)
+// 		return true
+// 	}
 
-	return false
-}
+// 	return false
+// }
 
-// FatalmIF if err != nil log message and error and return true
-func FatalmIF(msg string, err error) bool {
+// FatalIF if err != nil log message and error and return true
+func FatalIF(msg string, err error) bool {
 	if err != nil {
 		suger.Fatalw(msg, "error", err)
 		return true

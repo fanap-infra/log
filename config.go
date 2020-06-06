@@ -32,7 +32,7 @@ const (
 
 var zapLogger *zap.Logger
 var suger *zap.SugaredLogger
-var sugerCaller *zap.SugaredLogger
+var enabledCaller = false
 var loggerLevel zapcore.Level = zapcore.WarnLevel
 
 func init() {
@@ -123,7 +123,7 @@ func defaultInit() {
 	zapLogger = zap.New(core)
 
 	suger = zapLogger.Sugar()
-	sugerCaller = zapLogger.WithOptions(zap.AddCaller(), zap.AddCallerSkip(1)).Sugar()
+	enabledCaller = false
 }
 
 // Sync calls the underlying Core's Sync method, flushing any buffered log
@@ -135,10 +135,34 @@ func levelEnablerFunc(level zapcore.Level) bool {
 	return level >= loggerLevel
 }
 
-// SetLevel of log will been enable
-func SetLevel(level Level) {
+// Config logger
+func Config(level Level, addCaller bool) {
+	if addCaller {
+		suger = zapLogger.WithOptions(zap.AddCaller(), zap.AddCallerSkip(1)).Sugar()
+	}
+
 	loggerLevel = zapcore.Level(level)
 }
+
+// // SetLevel of log will been enable
+// func SetLevel(level Level) {
+// 	loggerLevel = zapcore.Level(level)
+// }
+
+// // SetCaller enable caller option or not
+// func SetCaller(enable bool) {
+// 	if enable {
+// 		if !enabledCaller {
+// 			suger = zapLogger.WithOptions(zap.AddCaller(), zap.AddCallerSkip(1)).Sugar()
+// 		}
+// 	} else {
+// 		if enabledCaller {
+// 			suger = zapLogger.Sugar()
+// 		}
+// 	}
+
+// 	enabledCaller = enable
+// }
 
 // RedirectStdLog std log to this to Info Level
 // It returns a function to restore the original prefix and flags and reset the

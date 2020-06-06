@@ -27,21 +27,19 @@ type logger struct{}
 var l logger
 
 // Printf must have the same semantics as log.Printf.
-func (l *logger) Printf(format string, args ...interface{}) {
-	Errorf(format, args...)
-}
+func (l *logger) Printf(format string, args ...interface{}) { suger.Errorf(format, args...) }
 
 func (l *logger) Trace(msg string)                          {}
 func (l *logger) Tracef(format string, args ...interface{}) {}
 
-func (l *logger) Debug(msg string)                          { Debug(msg) }
-func (l *logger) Debugf(format string, args ...interface{}) { Debugf(format, args...) }
+func (l *logger) Debug(msg string)                          { suger.Debug(msg) }
+func (l *logger) Debugf(format string, args ...interface{}) { suger.Debugf(format, args...) }
 
-func (l *logger) Info(msg string)                          { Info(msg) }
-func (l *logger) Infof(format string, args ...interface{}) { Infof(format, args...) }
+func (l *logger) Info(msg string)                          { suger.Info(msg) }
+func (l *logger) Infof(format string, args ...interface{}) { suger.Infof(format, args...) }
 
-func (l *logger) Warn(msg string)                          { Warn(msg) }
-func (l *logger) Warnf(format string, args ...interface{}) { Warnf(format, args...) }
+func (l *logger) Warn(msg string)                          { suger.Warn(msg) }
+func (l *logger) Warnf(format string, args ...interface{}) { suger.Warnf(format, args...) }
 
-func (l *logger) Error(msg string)                          { Error(msg) }
-func (l *logger) Errorf(format string, args ...interface{}) { Errorf(format, args...) }
+func (l *logger) Error(msg string)                          { suger.Error(msg) }
+func (l *logger) Errorf(format string, args ...interface{}) { suger.Errorf(format, args...) }

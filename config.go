@@ -7,6 +7,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+// Level of log
 type Level zapcore.Level
 
 const (

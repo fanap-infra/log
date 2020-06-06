@@ -7,8 +7,10 @@ import "gitlab.com/behnama2/log"
 
 func main() {
 	defer log.Sync()
-
+	log.RedirectStdLog()
 	log.SetLevel(log.DebugLevel)
+
+	// log.GetLogger()
 
 	log.Warn("Not Found config file")
 

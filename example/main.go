@@ -9,8 +9,11 @@ import (
 
 func main() {
 	defer log.Sync()
-
+	log.RedirectStdLog()
 	log.SetLevel(log.DebugLevel)
+
+	// log.GetLogger()
+
 
 	log.Warn("Not Found config file")
 
@@ -18,7 +21,7 @@ func main() {
 		"url", "http://example.com/data.json",
 	)
 
-	log.Errorc("Fetch",
+	log.Errorcv("Fetch",
 		"url", "http://example.com",
 		"attempt", 3,
 		"backoff", time.Second,

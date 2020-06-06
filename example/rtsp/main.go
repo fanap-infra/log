@@ -11,13 +11,13 @@ func GetPacketFunc() {
 	//
 	//log.Infof("Namitonam fetch konam %s", "Hossein")
 
-	log.Infoc("Namitonam",
+	log.Infocv("Namitonam",
 		"url", "http://example.com",
 		"attempt", 3,
 		"backoff", time.Second,
 	)
 
-	log.Errorc("Namitonam",
+	log.Errorcv("Namitonam",
 		"url", "http://example.com",
 		"attempt", 3,
 		"backoff", time.Second,

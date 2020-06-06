@@ -25,8 +25,8 @@ func Fatalv(message string, keysValues ...interface{}) {
 // 	return false
 // }
 
-// FatalIF if err != nil log message and error and return true
-func FatalIF(msg string, err error) bool {
+// FatalIf if err != nil log message and error and return true
+func FatalIf(msg string, err error) bool {
 	if err != nil {
 		suger.Fatalw(msg, "error", err)
 		return true

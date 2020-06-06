@@ -15,8 +15,8 @@ func Errorv(message string, keysValues ...interface{}) {
 	suger.Errorw(message, keysValues...)
 }
 
-// ErrorIF if err != nil log message and error and return true
-func ErrorIF(msg string, err error) bool {
+// ErrorIf if err != nil log message and error and return true
+func ErrorIf(msg string, err error) bool {
 	if err != nil {
 		suger.Errorw(msg, "error", err)
 		return true

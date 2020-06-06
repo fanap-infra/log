@@ -7,6 +7,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+// Level of log
 type Level zapcore.Level
 
 const (
@@ -30,12 +31,18 @@ const (
 	FatalLevel = Level(zapcore.FatalLevel)
 )
 
-var logger *zap.Logger
+var zapLogger *zap.Logger
 var suger *zap.SugaredLogger
-var sugerCaller *zap.SugaredLogger
+var enabledCaller = false
+var loggerLevel zapcore.Level = zapcore.WarnLevel
+
+func init() {
+	// WarnLevel is default
+	defaultInit()
+}
 
 // Init Logger
-func Init(level Level) {
+func defaultInit() {
 	// The bundled Config struct only supports the most common configuration
 	// options. More complex needs, like splitting logs between multiple files
 	// or writing to non-file outputs, require use of the zapcore package.
@@ -46,9 +53,7 @@ func Init(level Level) {
 	// high-priority logs.
 
 	// First, define our level-handling logic.
-	levelEnabler := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl >= zapcore.Level(level)
-	})
+	levelEnabler := zap.LevelEnablerFunc(levelEnablerFunc)
 
 	//highPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 	//	return lvl >= level
@@ -84,25 +89,25 @@ func Init(level Level) {
 		StacktraceKey:  "stacktrace",
 		LineEnding:     zapcore.DefaultLineEnding,
 		EncodeLevel:    zapcore.CapitalColorLevelEncoder,
-		EncodeTime:     zapcore.ISO8601TimeEncoder, //EpochTimeEncoder,
+		EncodeTime:     zapcore.RFC3339TimeEncoder,
 		EncodeDuration: zapcore.SecondsDurationEncoder,
 		EncodeCaller:   zapcore.ShortCallerEncoder,
 	}
 
-	//config := zapcore.EncoderConfig{
-	//	// Keys can be anything except the empty string.
-	//	TimeKey:        "T",
-	//	LevelKey:       "L",
-	//	NameKey:        "N",
-	//	CallerKey:      "C",
-	//	MessageKey:     "M",
-	//	StacktraceKey:  "S",
-	//	LineEnding:     zapcore.DefaultLineEnding,
-	//	EncodeLevel:    zapcore.CapitalLevelEncoder,
-	//	EncodeTime:     zapcore.ISO8601TimeEncoder,
-	//	EncodeDuration: zapcore.StringDurationEncoder,
-	//	EncodeCaller:   zapcore.ShortCallerEncoder,
-	//}
+	// config := zapcore.EncoderConfig{
+	// 	// Keys can be anything except the empty string.
+	// 	TimeKey:        "T",
+	// 	LevelKey:       "L",
+	// 	NameKey:        "N",
+	// 	CallerKey:      "C",
+	// 	MessageKey:     "M",
+	// 	StacktraceKey:  "S",
+	// 	LineEnding:     zapcore.DefaultLineEnding,
+	// 	EncodeLevel:    zapcore.CapitalLevelEncoder,
+	// 	EncodeTime:     zapcore.ISO8601TimeEncoder,
+	// 	EncodeDuration: zapcore.StringDurationEncoder,
+	// 	EncodeCaller:   zapcore.ShortCallerEncoder,
+	// }
 
 	consoleEncoder := zapcore.NewConsoleEncoder(config)
 
@@ -116,12 +121,61 @@ func Init(level Level) {
 	)
 
 	// From a zapcore.Core, it's easy to construct a Logger.
-	logger = zap.New(core)
+	zapLogger = zap.New(core)
 
-	suger = logger.Sugar()
-	sugerCaller = logger.WithOptions(zap.AddCaller(), zap.AddCallerSkip(1)).Sugar()
+	suger = zapLogger.Sugar()
+	enabledCaller = false
 }
 
-func Close() {
-	logger.Sync()
+// Sync calls the underlying Core's Sync method, flushing any buffered log
+func Sync() {
+	zapLogger.Sync()
+}
+
+func levelEnablerFunc(level zapcore.Level) bool {
+	return level >= loggerLevel
+}
+
+// Config logger
+func Config(level Level, addCaller bool) {
+	if addCaller {
+		suger = zapLogger.WithOptions(zap.AddCaller(), zap.AddCallerSkip(1)).Sugar()
+	}
+
+	loggerLevel = zapcore.Level(level)
+}
+
+// // SetLevel of log will been enable
+// func SetLevel(level Level) {
+// 	loggerLevel = zapcore.Level(level)
+// }
+
+// // SetCaller enable caller option or not
+// func SetCaller(enable bool) {
+// 	if enable {
+// 		if !enabledCaller {
+// 			suger = zapLogger.WithOptions(zap.AddCaller(), zap.AddCallerSkip(1)).Sugar()
+// 		}
+// 	} else {
+// 		if enabledCaller {
+// 			suger = zapLogger.Sugar()
+// 		}
+// 	}
+
+// 	enabledCaller = enable
+// }
+
+// RedirectStdLog std log to this to Info Level
+// It returns a function to restore the original prefix and flags and reset the
+// standard library's output to os.Stderr.
+func RedirectStdLog() func() {
+	return zap.RedirectStdLog(zapLogger)
+}
+
+// RedirectStdLogAt std log to this at log level
+// It returns a function to restore the original prefix and flags and reset the
+// standard library's output to os.Stderr.
+func RedirectStdLogAt(level Level) func() {
+	f, _ := zap.RedirectStdLogAt(zapLogger, zapcore.Level(level))
+	return f
 }

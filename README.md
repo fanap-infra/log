@@ -6,8 +6,12 @@ package main
 import "gitlab.com/behnama2/log"
 
 func main() {
-	log.Init(log.DebugLevel)
-	defer log.Close()
+	defer log.Sync()
+	log.RedirectStdLog()
+	log.Config(log.DebugLevel, true)
+
+	// log.GetLogger()
+	// log.SetCaller(true)
 
 	log.Warn("Not Found config file")
 
@@ -15,7 +19,7 @@ func main() {
 		"url", "http://example.com/data.json",
 	)
 
-	log.Errorc("Fetch",
+	log.Error("Fetch",
 		"url", "http://example.com",
 		"attempt", 3,
 		"backoff", time.Second,

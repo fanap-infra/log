@@ -8,16 +8,17 @@ import (
 )
 
 func main() {
-	log.Init(log.DebugLevel)
-	defer log.Close()
+	defer log.Sync()
+	log.RedirectStdLog()
+	log.Config(log.DebugLevel, true)
 
+	// log.GetLogger()
 	log.Warn("Not Found config file")
 
 	log.Infov("GET",
 		"url", "http://example.com/data.json",
 	)
-
-	log.Errorc("Fetch",
+	log.Errorv("Fetch",
 		"url", "http://example.com",
 		"attempt", 3,
 		"backoff", time.Second,

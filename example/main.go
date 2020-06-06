@@ -3,8 +3,8 @@ package main
 import (
 	"time"
 
-	"gitlab.com/behnama2/log"
-	"gitlab.com/behnama2/log/example/rtsp"
+	"github.com/fanap-infra/log"
+	"github.com/fanap-infra/log/example/rtsp"
 )
 
 func main() {

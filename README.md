@@ -3,7 +3,7 @@
 ```
 package main
 
-import "gitlab.com/behnama2/log"
+import "github.com/fanap-infra/log"
 
 func main() {
 	defer log.Sync()

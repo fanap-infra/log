@@ -1,4 +1,4 @@
-module gitlab.com/behnama2/log
+module github.com/fanap-infra/log
 
 go 1.14
 

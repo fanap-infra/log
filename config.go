@@ -137,11 +137,17 @@ func levelEnablerFunc(level zapcore.Level) bool {
 }
 
 // Config logger
-func Config(level Level, addCaller bool) {
+func Config(level Level, addCaller bool, printStack bool, levelStack Level) {
+	options := make([]zap.Option, 0)
 	if addCaller {
-		suger = zapLogger.WithOptions(zap.AddCaller(), zap.AddCallerSkip(1)).Sugar()
+		options = append(options, zap.AddCaller(), zap.AddCallerSkip(1))
 	}
 
+	if printStack {
+		options = append(options, zap.AddStacktrace(zapcore.Level(levelStack)))
+	}
+
+	suger = zapLogger.WithOptions(options...).Sugar()
 	loggerLevel = zapcore.Level(level)
 }
 

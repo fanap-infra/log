@@ -1,76 +1,106 @@
 package log
 
-import "go.uber.org/zap"
-
-// Logger is used for logging formatted messages.
-type Logger interface {
-	// Printf must have the same semantics as log.Printf.
-	Printf(format string, args ...interface{})
-
-	Trace(msg string)
-	Tracef(format string, args ...interface{})
-
-	Debug(msg string)
-	Debugf(format string, args ...interface{})
-	Debugv(message string, keysValues ...interface{})
-
-	Info(msg string)
-	Infof(format string, args ...interface{})
-	Infov(message string, keysValues ...interface{})
-
-	Warn(msg string)
-	Warnf(format string, args ...interface{})
-	Warnv(message string, keysValues ...interface{})
-
-	Error(msg string)
-	Errorf(format string, args ...interface{})
-	Errorv(message string, keysValues ...interface{})
+type Logger struct {
+	scope  string
+	caller bool
+	skip   int
 }
 
-// GetLogger standard logger
-func GetLogger() Logger {
-	return &l
+var defLogger Logger = Logger{
+	scope:  defaultScope,
+	caller: true,
 }
 
-// GetScope standard logger
-func GetScope(name string) Logger {
-	return &logger{
-		suger: suger.Named(name),
+func GetLogger() *Logger {
+	return &defLogger
+}
+
+func GetScope(name string) *Logger {
+	return &Logger{
+		scope: name,
+		skip:  defaultSkip,
 	}
 }
 
-type logger struct {
-	suger *zap.SugaredLogger
+func GetCustom(name string, skip int) *Logger {
+	return &Logger{
+		scope: name,
+		skip:  skip + defaultSkip,
+	}
 }
 
-var l logger = logger{suger: suger}
-
-// Printf must have the same semantics as log.Printf.
-func (l *logger) Printf(format string, args ...interface{}) { l.suger.Errorf(format, args...) }
-
-func (l *logger) Trace(msg string)                          {}
-func (l *logger) Tracef(format string, args ...interface{}) {}
-
-func (l *logger) Debug(msg string)                          { l.suger.Debug(msg) }
-func (l *logger) Debugf(format string, args ...interface{}) { l.suger.Debugf(format, args...) }
-func (l *logger) Debugv(message string, keysValues ...interface{}) {
-	l.suger.Debugw(message, keysValues...)
+func (l *Logger) Printf(format string, args ...interface{}) {
+	log.printf(InfoLevel, l.scope, l.skip, format, args)
 }
 
-func (l *logger) Info(msg string)                          { l.suger.Info(msg) }
-func (l *logger) Infof(format string, args ...interface{}) { l.suger.Infof(format, args...) }
-func (l *logger) Infov(message string, keysValues ...interface{}) {
-	l.suger.Infow(message, keysValues...)
+func (l *Logger) Trace(messages ...interface{}) {
+	log.print(TraceLevel, l.scope, l.skip, messages...)
 }
 
-func (l *logger) Warn(msg string)                          { l.suger.Warn(msg) }
-func (l *logger) Warnf(format string, args ...interface{}) { l.suger.Warnf(format, args...) }
-func (l *logger) Warnv(message string, keysValues ...interface{}) {
-	l.suger.Warnw(message, keysValues...)
+func (l *Logger) Tracef(format string, args ...interface{}) {
+	log.printf(TraceLevel, l.scope, l.skip, format, args)
 }
 
-func (l *logger) Error(msg string)                          { l.suger.Error(msg) }
-func (l *logger) Errorf(format string, args ...interface{}) { l.suger.Errorf(format, args...) }
-func (l *logger) Errorv(message string, keysValues ...interface{}) {
-	l.suger.Errorw(message, keysValues...)
+func (l *Logger) Tracev(message string, keysValues ...interface{}) {
+	log.printv(TraceLevel, l.scope, l.skip, message, keysValues)
+}
+
+func (l *Logger) Debug(messages ...interface{}) {
+	log.print(DebugLevel, l.scope, l.skip, messages...)
+}
+
+func (l *Logger) Debugf(format string, args ...interface{}) {
+	log.printf(DebugLevel, l.scope, l.skip, format, args)
+}
+
+func (l *Logger) Debugv(message string, keysValues ...interface{}) {
+	log.printv(DebugLevel, l.scope, l.skip, message, keysValues)
+}
+
+func (l *Logger) Info(messages ...interface{}) {
+	log.print(InfoLevel, l.scope, l.skip, messages...)
+}
+
+func (l *Logger) Infof(format string, args ...interface{}) {
+	log.printf(InfoLevel, l.scope, l.skip, format, args)
+}
+
+func (l *Logger) Infov(message string, keysValues ...interface{}) {
+	log.printv(InfoLevel, l.scope, l.skip, message, keysValues)
+}
+
+func (l *Logger) Warn(messages ...interface{}) {
+	log.print(WarnLevel, l.scope, l.skip, messages...)
+}
+
+func (l *Logger) Warnf(format string, args ...interface{}) {
+	log.printf(WarnLevel, l.scope, l.skip, format, args)
+}
+
+func (l *Logger) Warnv(message string, keysValues ...interface{}) {
+	log.printv(WarnLevel, l.scope, l.skip, message, keysValues)
+}
+
+func (l *Logger) Error(messages ...interface{}) {
+	log.print(ErrorLevel, l.scope, l.skip, messages...)
+}
+
+func (l *Logger) Errorf(format string, args ...interface{}) {
+	log.printf(ErrorLevel, l.scope, l.skip, format, args)
+}
+
+func (l *Logger) Errorv(message string, keysValues ...interface{}) {
+	log.printv(ErrorLevel, l.scope, l.skip, message, keysValues)
+}
+
+func (l *Logger) Fatal(messages ...interface{}) {
+	log.print(FatalLevel, l.scope, l.skip, messages...)
+}
+
+func (l *Logger) Fatalf(format string, args ...interface{}) {
+	log.printf(FatalLevel, l.scope, l.skip, format, args)
+}
+
+func (l *Logger) Fatalv(message string, keysValues ...interface{}) {
+	log.printv(FatalLevel, l.scope, l.skip, message, keysValues)
 }

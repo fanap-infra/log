@@ -8,21 +8,48 @@ import (
 )
 
 func main() {
-	defer log.Sync()
-	log.RedirectStdLog()
-	log.Config(log.DebugLevel, true)
+	defer log.Close()
+	//log.RedirectStdLog()
+
+	consoleEnabler := func(l log.Level, s string) bool { return true }
+	influxEnabler := func(l log.Level, s string) bool { return true }
+	stackEnabler := func(l log.Level, s string) bool { return l == log.ErrorLevel }
+
+	log.Config(log.ConsoleWriter(true, stackEnabler, consoleEnabler),
+		log.InfluxWriter("http://localhost:8086", "my-token", "behnama", "example-log", true, stackEnabler, influxEnabler))
+
+	logger := log.GetScope("example")
 
 	// log.GetLogger()
-	log.Warn("Not Found config file")
-
-	log.Infov("GET",
-		"url", "http://example.com/data.json",
-	)
-	log.Errorv("Fetch",
+	logger.Trace("Check Trace 1")
+	logger.Debug("Debug Code")
+	logger.Warn("Not Found config file")
+	logger.Infov("GET", "url", "http://example.com/data.json")
+	logger.Errorv("Fetch",
 		"url", "http://example.com",
 		"attempt", 3,
 		"backoff", time.Second,
 	)
+	test(logger)
 
 	rtsp.GetPacketFunc()
+
+	logger.Fatal("Fatal")
+}
+
+func test(logger *log.Logger) {
+	logger.Errorv("Fetch",
+		"url", "http://example.com",
+		"attempt", 3,
+		"backoff", time.Second,
+	)
+	test2(logger)
+}
+
+func test2(logger *log.Logger) {
+	logger.Errorv("Fetch",
+		"url", "http://example.com",
+		"attempt", 3,
+		"backoff", time.Second,
+	)
 }

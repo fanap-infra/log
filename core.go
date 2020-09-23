@@ -10,7 +10,7 @@ type EnablerFunc func(level Level, scope string) bool
 type core struct {
 	writers []*Writer
 
-	print  func(l Level, s string, skip int, messages ...interface{})
+	print  func(l Level, s string, skip int, messages []interface{})
 	printf func(l Level, s string, skip int, format string, args []interface{})
 	printv func(l Level, s string, skip int, message string, keysValues []interface{})
 }
@@ -24,7 +24,7 @@ func (c *core) Close() {
 func (c *core) Config(w []*Writer) {
 	switch len(w) {
 	case 0:
-		c.print = func(l Level, s string, skip int, messages ...interface{}) {}
+		c.print = func(l Level, s string, skip int, messages []interface{}) {}
 		c.printf = func(l Level, s string, skip int, format string, args []interface{}) {}
 		c.printv = func(l Level, s string, skip int, message string, keysValues []interface{}) {}
 	case 1:
@@ -47,7 +47,7 @@ func (c *core) Config(w []*Writer) {
 	c.writers = w
 }
 
-func (c *core) print1(l Level, s string, skip int, messages ...interface{}) {
+func (c *core) print1(l Level, s string, skip int, messages []interface{}) {
 	w := c.writers[0]
 	if w.enabler(l, s) {
 		caller := ""
@@ -183,7 +183,7 @@ func (c *core) printv1(l Level, s string, skip int, message string, keysValues [
 // 	}
 // }
 
-func (c *core) printAll(l Level, s string, skip int, messages ...interface{}) {
+func (c *core) printAll(l Level, s string, skip int, messages []interface{}) {
 	caller := ""
 	var stacks []string
 

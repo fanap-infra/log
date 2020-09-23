@@ -22,9 +22,14 @@ func main() {
 
 	// log.GetLogger()
 	logger.Trace("Check Trace 1")
+
 	logger.Debug("Debug Code")
+	logger.Debugf("Debug Code %s", "Hello")
+
 	logger.Warn("Not Found config file")
+
 	logger.Infov("GET", "url", "http://example.com/data.json")
+
 	logger.Errorv("Fetch",
 		"url", "http://example.com",
 		"attempt", 3,

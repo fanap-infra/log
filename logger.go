@@ -33,20 +33,20 @@ func (l *Logger) Printf(format string, args ...interface{}) {
 	log.printf(InfoLevel, l.scope, l.skip, format, args)
 }
 
-func (l *Logger) Trace(messages ...interface{}) {
-	log.print(TraceLevel, l.scope, l.skip, messages...)
-}
+// func (l *Logger) Trace(messages ...interface{}) {
+// 	loggerTrace(l, messages)
+// }
 
-func (l *Logger) Tracef(format string, args ...interface{}) {
-	log.printf(TraceLevel, l.scope, l.skip, format, args)
-}
+// func (l *Logger) Tracef(format string, args ...interface{}) {
+// 	loggerTracef(l, format, args)
+// }
 
-func (l *Logger) Tracev(message string, keysValues ...interface{}) {
-	log.printv(TraceLevel, l.scope, l.skip, message, keysValues)
-}
+// func (l *Logger) Tracev(message string, keysValues ...interface{}) {
+// 	loggerTracef(l, message, keysValues)
+// }
 
 func (l *Logger) Debug(messages ...interface{}) {
-	log.print(DebugLevel, l.scope, l.skip, messages...)
+	log.print(DebugLevel, l.scope, l.skip, messages)
 }
 
 func (l *Logger) Debugf(format string, args ...interface{}) {
@@ -58,7 +58,7 @@ func (l *Logger) Debugv(message string, keysValues ...interface{}) {
 }
 
 func (l *Logger) Info(messages ...interface{}) {
-	log.print(InfoLevel, l.scope, l.skip, messages...)
+	log.print(InfoLevel, l.scope, l.skip, messages)
 }
 
 func (l *Logger) Infof(format string, args ...interface{}) {
@@ -70,7 +70,7 @@ func (l *Logger) Infov(message string, keysValues ...interface{}) {
 }
 
 func (l *Logger) Warn(messages ...interface{}) {
-	log.print(WarnLevel, l.scope, l.skip, messages...)
+	log.print(WarnLevel, l.scope, l.skip, messages)
 }
 
 func (l *Logger) Warnf(format string, args ...interface{}) {
@@ -82,7 +82,7 @@ func (l *Logger) Warnv(message string, keysValues ...interface{}) {
 }
 
 func (l *Logger) Error(messages ...interface{}) {
-	log.print(ErrorLevel, l.scope, l.skip, messages...)
+	log.print(ErrorLevel, l.scope, l.skip, messages)
 }
 
 func (l *Logger) Errorf(format string, args ...interface{}) {
@@ -94,7 +94,7 @@ func (l *Logger) Errorv(message string, keysValues ...interface{}) {
 }
 
 func (l *Logger) Fatal(messages ...interface{}) {
-	log.print(FatalLevel, l.scope, l.skip, messages...)
+	log.print(FatalLevel, l.scope, l.skip, messages)
 }
 
 func (l *Logger) Fatalf(format string, args ...interface{}) {

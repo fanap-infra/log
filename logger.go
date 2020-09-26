@@ -121,3 +121,8 @@ func (l *Logger) Panicf(format string, args ...interface{}) {
 	log.printf(PanicLevel, l.scope, l.skip, format, args)
 	panic(fmt.Sprintf(format, args...))
 }
+
+func (l *Logger) Panicv(message string, keysValues ...interface{}) {
+	log.printv(PanicLevel, l.scope, l.skip, message, keysValues)
+	panic(message)
+}

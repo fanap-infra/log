@@ -74,3 +74,8 @@ func Panicf(format string, args ...interface{}) {
 	log.printf(PanicLevel, defaultScope, defaultSkip, format, args)
 	panic(fmt.Sprintf(format, args...))
 }
+
+func Panicv(message string, keysValues ...interface{}) {
+	log.printv(PanicLevel, defaultScope, defaultSkip, message, keysValues)
+	panic(message)
+}

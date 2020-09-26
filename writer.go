@@ -1,5 +1,7 @@
 package log
 
+import "sync"
+
 type encoder interface {
 	Print(l Level, s string, caller string, stacks []string, message string)
 	Printv(l Level, s string, caller string, stacks []string, message string, keysValues []interface{})
@@ -16,8 +18,8 @@ type Writer struct {
 	stack   EnablerFunc
 	caller  bool
 
-	enablerCache map[enablerFuncParam]bool
-	stackCache   map[enablerFuncParam]bool
+	enablerCache sync.Map
+	stackCache   sync.Map
 }
 
 func newWriter(enabler EnablerFunc, stack EnablerFunc, caller bool, encoder encoder) *Writer {
@@ -27,31 +29,33 @@ func newWriter(enabler EnablerFunc, stack EnablerFunc, caller bool, encoder enco
 		caller:  caller,
 		stack:   stack,
 
-		enablerCache: make(map[enablerFuncParam]bool),
-		stackCache:   make(map[enablerFuncParam]bool),
+		// enablerCache: make(map[enablerFuncParam]bool),
+		// stackCache:   make(map[enablerFuncParam]bool),
 	}
 }
 
 func (w *Writer) isEnable(level Level, scope string) bool {
 	p := enablerFuncParam{level, scope}
 
-	if r, ok := w.enablerCache[p]; ok {
-		return r
+	if r, ok := w.enablerCache.Load(p); ok {
+		return r.(bool)
 	}
 
 	r := w.enabler(level, scope)
-	w.enablerCache[p] = r
+	w.enablerCache.Store(p, r)
+
 	return r
 }
 
 func (w *Writer) isStack(level Level, scope string) bool {
 	p := enablerFuncParam{level, scope}
 
-	if r, ok := w.stackCache[p]; ok {
-		return r
+	if r, ok := w.stackCache.Load(p); ok {
+		return r.(bool)
 	}
 
 	r := w.stack(level, scope)
-	w.stackCache[p] = r
+	w.stackCache.Store(p, r)
+
 	return r
 }

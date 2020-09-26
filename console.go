@@ -12,8 +12,9 @@ var consoleLevelText = []string{"  TRACE  ", "  DEBUG  ", "  INFO   ", "  WARN  
 var consoleLevelColor = []string{"96", "95", "92", "93", "91", "31", "31"}
 
 const scopeAlign = 10
-const callerAlign = 30
-const messageAlign = 70
+const callerAlign = 40
+
+// const messageAlign = 70
 
 // Console write log to console stderr
 type Console struct {
@@ -45,16 +46,14 @@ func (c *Console) writeMessage(b *bytes.Buffer, l Level, scope string, caller st
 
 	if scope != "" {
 		b.WriteString("[" + scope + "]")
-		c.writeAlign(scopeAlign, len(scope)+2, b)
+		n += c.writeAlign(scopeAlign, len(scope)+2, b)
 	} else {
-		c.writeAlign(scopeAlign, 0, b)
+		n += c.writeAlign(scopeAlign, 0, b)
 	}
-	n += scopeAlign
 
 	if caller != "" {
 		b.WriteString(caller)
-		c.writeAlign(callerAlign, len(caller), b)
-		n += callerAlign
+		n += c.writeAlign(callerAlign, len(caller), b)
 	}
 
 	if c.enableColor {
@@ -70,14 +69,17 @@ func (c *Console) writeMessage(b *bytes.Buffer, l Level, scope string, caller st
 	return
 }
 
-func (c *Console) writeAlign(align int, len int, b *bytes.Buffer) {
+func (c *Console) writeAlign(align int, len int, b *bytes.Buffer) int {
 	if len < align {
 		for i := align - len; i > 0; i-- {
 			b.WriteByte(32) // Space
 		}
+		return align
 	} else {
 		b.WriteByte(32) // Space
 	}
+
+	return len + 1
 }
 
 func (c *Console) writeEndValues(b *bytes.Buffer) {
@@ -156,8 +158,9 @@ func (c *Console) Printv(l Level, scope string, caller string, stacks []string, 
 	buf := c.getBuffer()
 	defer c.putBuffer(buf)
 
-	n := c.writeMessage(buf, l, scope, caller, message)
-	c.writeAlign(messageAlign, n, buf)
+	/*n :=*/
+	c.writeMessage(buf, l, scope, caller, message)
+	// c.writeAlign(messageAlign, n, buf)
 	lenValues := len(keysValues)
 	for i := 0; i < lenValues; i += 2 {
 		if key, ok := keysValues[i].(string); ok {

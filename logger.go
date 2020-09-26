@@ -1,5 +1,7 @@
 package log
 
+import "fmt"
+
 type Logger struct {
 	scope  string
 	caller bool
@@ -29,21 +31,17 @@ func GetCustom(name string, skip int) *Logger {
 	}
 }
 
+func (l *Logger) Print(messages ...interface{}) {
+	log.print(InfoLevel, l.scope, l.skip, messages)
+}
+
+func (l *Logger) Println(messages ...interface{}) {
+	log.print(InfoLevel, l.scope, l.skip, messages)
+}
+
 func (l *Logger) Printf(format string, args ...interface{}) {
 	log.printf(InfoLevel, l.scope, l.skip, format, args)
 }
-
-// func (l *Logger) Trace(messages ...interface{}) {
-// 	loggerTrace(l, messages)
-// }
-
-// func (l *Logger) Tracef(format string, args ...interface{}) {
-// 	loggerTracef(l, format, args)
-// }
-
-// func (l *Logger) Tracev(message string, keysValues ...interface{}) {
-// 	loggerTracef(l, message, keysValues)
-// }
 
 func (l *Logger) Debug(messages ...interface{}) {
 	log.print(DebugLevel, l.scope, l.skip, messages)
@@ -97,10 +95,29 @@ func (l *Logger) Fatal(messages ...interface{}) {
 	log.print(FatalLevel, l.scope, l.skip, messages)
 }
 
+func (l *Logger) Fatalln(messages ...interface{}) {
+	log.print(FatalLevel, l.scope, l.skip, messages)
+}
+
 func (l *Logger) Fatalf(format string, args ...interface{}) {
 	log.printf(FatalLevel, l.scope, l.skip, format, args)
 }
 
 func (l *Logger) Fatalv(message string, keysValues ...interface{}) {
 	log.printv(FatalLevel, l.scope, l.skip, message, keysValues)
+}
+
+func (l *Logger) Panic(messages ...interface{}) {
+	log.print(PanicLevel, l.scope, l.skip, messages)
+	panic(messages)
+}
+
+func (l *Logger) Panicln(messages ...interface{}) {
+	log.print(PanicLevel, l.scope, l.skip, messages)
+	panic(messages)
+}
+
+func (l *Logger) Panicf(format string, args ...interface{}) {
+	log.printf(PanicLevel, l.scope, l.skip, format, args)
+	panic(fmt.Sprintf(format, args...))
 }

@@ -9,6 +9,7 @@ const (
 	WarnLevel
 	ErrorLevel
 	FatalLevel
+	PanicLevel
 )
 
-var levelText = []string{"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"}
+var levelText = []string{"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "PANIC"}

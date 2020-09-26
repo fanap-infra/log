@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
-var consoleLevelText = []string{"  TRACE  ", "  DEBUG  ", "  INFO   ", "  WARN   ", "  ERROR  ", "  FATAL  "}
-var consoleLevelColor = []string{"96", "95", "92", "93", "91", "31"}
+var consoleLevelText = []string{"  TRACE  ", "  DEBUG  ", "  INFO   ", "  WARN   ", "  ERROR  ", "  FATAL  ", "  PANIC  "}
+var consoleLevelColor = []string{"96", "95", "92", "93", "91", "31", "31"}
 
 const scopeAlign = 10
 const callerAlign = 30

@@ -8,7 +8,7 @@ type encore interface {
 
 type Writer struct {
 	encore
-	enabler EnablerFunc
-	stack   EnablerFunc
+	enabler EnablerFunc // ToDo: immutable: use map for cache reponse
+	stack   EnablerFunc // ToDo: immutable: use map for cache reponse
 	caller  bool
 }

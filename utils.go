@@ -21,12 +21,14 @@ func getCallerFrame(skip int) (frame runtime.Frame, ok bool) {
 }
 
 func getFolderFile(s string) string {
+	const pathCount = 0
+
 	b := 0
 	a := 0
 	for i := len(s) - 2; i > 0; i-- {
 		if os.IsPathSeparator(s[i]) {
 			a = i + 1
-			if b > 0 {
+			if b > pathCount {
 				break
 			}
 			b++

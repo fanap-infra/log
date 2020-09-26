@@ -49,13 +49,13 @@ func (c *core) Config(w []*Writer) {
 
 func (c *core) print1(l Level, s string, skip int, messages []interface{}) {
 	w := c.writers[0]
-	if w.enabler(l, s) {
+	if w.isEnable(l, s) {
 		caller := ""
 		var stacks []string
 		if w.caller {
 			caller = c.getCaller(skip)
 		}
-		if w.stack(l, s) {
+		if w.isStack(l, s) {
 			stacks = c.getStacks(skip)
 		}
 		w.Print(l, s, caller, stacks, fmt.Sprint(messages...))
@@ -64,13 +64,13 @@ func (c *core) print1(l Level, s string, skip int, messages []interface{}) {
 
 func (c *core) printf1(l Level, s string, skip int, format string, args []interface{}) {
 	w := c.writers[0]
-	if w.enabler(l, s) {
+	if w.isEnable(l, s) {
 		caller := ""
 		var stacks []string
 		if w.caller {
 			caller = c.getCaller(skip)
 		}
-		if w.stack(l, s) {
+		if w.isStack(l, s) {
 			stacks = c.getStacks(skip)
 		}
 
@@ -80,13 +80,13 @@ func (c *core) printf1(l Level, s string, skip int, format string, args []interf
 
 func (c *core) printv1(l Level, s string, skip int, message string, keysValues []interface{}) {
 	w := c.writers[0]
-	if w.enabler(l, s) {
+	if w.isEnable(l, s) {
 		caller := ""
 		var stacks []string
 		if w.caller {
 			caller = c.getCaller(skip)
 		}
-		if w.stack(l, s) {
+		if w.isStack(l, s) {
 			stacks = c.getStacks(skip)
 		}
 		w.Printv(l, s, caller, stacks, message, keysValues)
@@ -107,7 +107,7 @@ func (c *core) printv1(l Level, s string, skip int, message string, keysValues [
 // // 	}
 
 // // 	w := c.writers[0]
-// // 	if w.enabler(l, s) {
+// // 	if w.isEnable(l, s) {
 // // 		c1 := ""
 // // 		s1 := ""
 
@@ -123,7 +123,7 @@ func (c *core) printv1(l Level, s string, skip int, message string, keysValues [
 // // 	}
 
 // // 	w = c.writers[1]
-// // 	if w.enabler(l, s) {
+// // 	if w.isEnable(l, s) {
 // // 		if w.caller {
 // // 			w.Print(l, s, caller, stack, t)
 // // 		} else {
@@ -140,7 +140,7 @@ func (c *core) printv1(l Level, s string, skip int, message string, keysValues [
 // // 	}
 
 // // 	w := c.writers[0]
-// // 	if w.enabler(l, s) {
+// // 	if w.isEnable(l, s) {
 // // 		if w.caller {
 // // 			w.Print(l, s, caller, message)
 // // 		} else {
@@ -149,7 +149,7 @@ func (c *core) printv1(l Level, s string, skip int, message string, keysValues [
 // // 	}
 
 // // 	w = c.writers[1]
-// // 	if w.enabler(l, s) {
+// // 	if w.isEnable(l, s) {
 // // 		if w.caller {
 // // 			w.Print(l, s, caller, message)
 // // 		} else {
@@ -165,7 +165,7 @@ func (c *core) printv1(l Level, s string, skip int, message string, keysValues [
 // 		caller = c.getCaller()
 // 	}
 
-// 	if w.enabler(l, s) {
+// 	if w.isEnable(l, s) {
 // 		if w.caller {
 // 			w.Printv(l, s, caller, message, keysValues)
 // 		} else {
@@ -174,7 +174,7 @@ func (c *core) printv1(l Level, s string, skip int, message string, keysValues [
 // 	}
 
 // 	w = c.writers[1]
-// 	if w.enabler(l, s) {
+// 	if w.isEnable(l, s) {
 // 		if w.caller {
 // 			w.Printv(l, s, caller, message, keysValues)
 // 		} else {
@@ -191,7 +191,7 @@ func (c *core) printAll(l Level, s string, skip int, messages []interface{}) {
 	var stacksS []string
 
 	for _, w := range c.writers {
-		if w.enabler(l, s) {
+		if w.isEnable(l, s) {
 			if w.caller {
 				if caller == "" {
 					caller = c.getCaller(skip)
@@ -199,7 +199,7 @@ func (c *core) printAll(l Level, s string, skip int, messages []interface{}) {
 				callerS = caller
 			}
 
-			if w.stack(l, s) {
+			if w.isStack(l, s) {
 				if len(stacks) == 0 {
 					stacks = c.getStacks(skip)
 				}
@@ -219,7 +219,7 @@ func (c *core) printfAll(l Level, s string, skip int, format string, args []inte
 	var stacksS []string
 	message := fmt.Sprintf(format, args...)
 	for _, w := range c.writers {
-		if w.enabler(l, s) {
+		if w.isEnable(l, s) {
 			if w.caller {
 				if caller == "" {
 					caller = c.getCaller(skip)
@@ -227,7 +227,7 @@ func (c *core) printfAll(l Level, s string, skip int, format string, args []inte
 				callerS = caller
 			}
 
-			if w.stack(l, s) {
+			if w.isStack(l, s) {
 				if len(stacks) == 0 {
 					stacks = c.getStacks(skip)
 				}
@@ -245,7 +245,7 @@ func (c *core) printvAll(l Level, s string, skip int, message string, keysValues
 	callerS := ""
 	var stacksS []string
 	for _, w := range c.writers {
-		if w.enabler(l, s) {
+		if w.isEnable(l, s) {
 			if w.caller {
 				if caller == "" {
 					caller = c.getCaller(skip)
@@ -253,7 +253,7 @@ func (c *core) printvAll(l Level, s string, skip int, message string, keysValues
 				callerS = caller
 			}
 
-			if w.stack(l, s) {
+			if w.isStack(l, s) {
 				if len(stacks) == 0 {
 					stacks = c.getStacks(skip)
 				}

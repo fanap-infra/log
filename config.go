@@ -3,10 +3,10 @@ package log
 var log core = core{}
 
 func init() {
-	Config(ConsoleWriter(true, func(l Level, s string) bool { return l == ErrorLevel }, func(l Level, s string) bool { return true }))
+	Config(ConsoleWriter(true, func(l Level, s string) bool { return l >= ErrorLevel }, func(l Level, s string) bool { return true }))
 }
 
-// Config logger
+// Config logger enabler funcs is immutable response
 func Config(writers ...*Writer) {
 	log.Config(writers)
 }

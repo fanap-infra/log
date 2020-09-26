@@ -27,13 +27,7 @@ func InfluxWriter(serverURL string, authToken string, org string, bucket string,
 		}},
 	}
 	i.Connect(serverURL, authToken, org, bucket)
-
-	return &Writer{
-		encore:  i,
-		enabler: enabler,
-		caller:  caller,
-		stack:   stack,
-	}
+	return newWriter(enabler, stack, caller, i)
 }
 
 func (c *Influx) Connect(serverURL string, authToken string, org string, bucket string) {

@@ -22,19 +22,14 @@ type Console struct {
 }
 
 func ConsoleWriter(caller bool, stack EnablerFunc, enabler EnablerFunc) *Writer {
-	return &Writer{
-		encore: &Console{
-			pool: sync.Pool{New: func() interface{} {
-				b := bytes.NewBuffer(make([]byte, 150)) // buffer init with 150 size
-				b.Reset()
-				return b
-			}},
-			enableColor: true,
-		},
-		enabler: enabler,
-		caller:  caller,
-		stack:   stack,
-	}
+	return newWriter(enabler, stack, caller, &Console{
+		pool: sync.Pool{New: func() interface{} {
+			b := bytes.NewBuffer(make([]byte, 150)) // buffer init with 150 size
+			b.Reset()
+			return b
+		}},
+		enableColor: true,
+	})
 }
 
 func (c *Console) close() {}

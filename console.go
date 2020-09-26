@@ -168,7 +168,7 @@ func (c *Console) Printv(l Level, scope string, caller string, stacks []string, 
 		if key, ok := keysValues[i].(string); ok {
 			c.writeKey(buf, key)
 		}
-		c.writeValue(buf, fmt.Sprintf("%v", keysValues[i+1]))
+		c.writeValue(buf, fmt.Sprint(keysValues[i+1]))
 	}
 	c.writeEndValues(buf)
 	if len(stacks) > 0 {

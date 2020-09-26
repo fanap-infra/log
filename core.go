@@ -74,7 +74,7 @@ func (c *core) printf1(l Level, s string, skip int, format string, args []interf
 			stacks = c.getStacks(skip)
 		}
 
-		w.Print(l, s, caller, stacks, fmt.Sprintf(format, args))
+		w.Print(l, s, caller, stacks, fmt.Sprintf(format, args...))
 	}
 }
 
@@ -133,7 +133,7 @@ func (c *core) printv1(l Level, s string, skip int, message string, keysValues [
 // // }
 
 // // func (c *core) printf2(l Level, s string, format string, args []interface{}) {
-// // 	message := fmt.Sprintf(format, args)
+// // 	message := fmt.Sprintf(format, args...)
 // // 	caller := ""
 // // 	if c.writers[0].caller || c.writers[1].caller {
 // // 		caller = c.getCaller()
@@ -217,7 +217,7 @@ func (c *core) printfAll(l Level, s string, skip int, format string, args []inte
 
 	callerS := ""
 	var stacksS []string
-	message := fmt.Sprintf(format, args)
+	message := fmt.Sprintf(format, args...)
 	for _, w := range c.writers {
 		if w.enabler(l, s) {
 			if w.caller {

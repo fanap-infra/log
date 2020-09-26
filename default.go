@@ -1,5 +1,7 @@
 package log
 
+import "fmt"
+
 const defaultScope = ""
 const defaultSkip = 3
 
@@ -61,4 +63,14 @@ func Fatalf(format string, args ...interface{}) {
 
 func Fatalv(message string, keysValues ...interface{}) {
 	log.printv(FatalLevel, defaultScope, defaultSkip, message, keysValues)
+}
+
+func Panic(messages ...interface{}) {
+	log.print(PanicLevel, defaultScope, defaultSkip, messages)
+	panic(messages)
+}
+
+func Panicf(format string, args ...interface{}) {
+	log.printf(PanicLevel, defaultScope, defaultSkip, format, args)
+	panic(fmt.Sprintf(format, args...))
 }

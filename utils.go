@@ -38,7 +38,7 @@ func getFolderFile(s string) string {
 	return s[a:]
 }
 
-func getStacks(skip int) []string {
+func getStack(skip int) []string {
 	const seperator2 = ": "
 	stack := string(debug.Stack())
 	// + 2 -> skip: "runtime/debug.stack" and "daneshvar/sesame/logger.(*logger).stack"

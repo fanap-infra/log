@@ -141,20 +141,20 @@ func (c *Console) writeEnd(buf *bytes.Buffer, level Level, skipStack int) {
 	//}
 }
 
-func (c *Console) Print(l Level, scope string, caller string, stacks []string, message string) {
+func (c *Console) Print(l Level, scope string, caller string, stack []string, message string) {
 	buf := c.getBuffer()
 	defer c.putBuffer(buf)
 	c.writeMessage(buf, l, scope, caller, message)
-	if len(stacks) > 0 {
+	if len(stack) > 0 {
 		c.writeNewline(buf)
-		for i := range stacks {
-			buf.WriteString("\t" + stacks[i])
+		for i := range stack {
+			buf.WriteString("\t" + stack[i])
 		}
 	}
 	c.writeEnd(buf, l, 3)
 }
 
-func (c *Console) Printv(l Level, scope string, caller string, stacks []string, message string, keysValues []interface{}) {
+func (c *Console) Printv(l Level, scope string, caller string, stack []string, message string, keysValues []interface{}) {
 	buf := c.getBuffer()
 	defer c.putBuffer(buf)
 
@@ -169,9 +169,9 @@ func (c *Console) Printv(l Level, scope string, caller string, stacks []string, 
 		c.writeValue(buf, fmt.Sprint(keysValues[i+1]))
 	}
 	c.writeEndValues(buf)
-	if len(stacks) > 0 {
-		for i := range stacks {
-			buf.WriteString("\n    " + stacks[i])
+	if len(stack) > 0 {
+		for i := range stack {
+			buf.WriteString("\n    " + stack[i])
 		}
 		c.writeNewline(buf)
 	}

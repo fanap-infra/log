@@ -3,6 +3,7 @@ package log
 import (
 	"bytes"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -53,46 +54,16 @@ func (i *Influx) putBuffer(b *bytes.Buffer) {
 	i.pool.Put(b)
 }
 
-func (i *Influx) Print(l Level, s string, caller string, stacks []string, message string) {
-	// create point
-	p := influxdb.NewPoint(
-		measurement,
-		map[string]string{
-			"app":   i.app,
-			"scope": s,
-			"level": levelText[l],
-		},
-		map[string]interface{}{
-			"message": message,
-			"caller":  caller,
-			"stacks":  stacks,
-		},
-		time.Now())
+func (i *Influx) Print(l Level, s string, caller string, stack []string, message string) {
+	fields := make(map[string]interface{})
 
-	// write asynchronously
-	i.writeAPI.WritePoint(p)
-}
+	fields["message"] = message
+	if caller != "" {
+		fields["caller"] = caller
+	}
 
-func (i *Influx) Printv(l Level, s string, caller string, stacks []string, message string, keysValues []interface{}) {
-	fields := i.getBuffer()
-	defer i.putBuffer(fields)
-
-	ln := len(keysValues)
-	if ln > 1 {
-		fields.WriteByte('{')
-		i := 0
-		for {
-			if key, ok := keysValues[i].(string); ok {
-				fields.WriteString(`"` + key + `":"` + fmt.Sprint(keysValues[i+1]) + `"`)
-			}
-
-			i += 2
-			if i == ln {
-				break
-			}
-			fields.WriteByte(',')
-		}
-		fields.WriteByte('}')
+	if len(stack) > 0 {
+		fields["stack"] = strings.Join(stack, "\n")
 	}
 
 	// create point
@@ -103,14 +74,57 @@ func (i *Influx) Printv(l Level, s string, caller string, stacks []string, messa
 			"scope": s,
 			"level": levelText[l],
 		},
-		map[string]interface{}{
-			"message": message,
-			"caller":  caller,
-			"stacks":  stacks,
-			"data":    fields,
-		},
+		fields,
 		time.Now())
 
 	// write asynchronously
 	i.writeAPI.WritePoint(p)
+}
+
+func (i *Influx) Printv(l Level, s string, caller string, stack []string, message string, keysValues []interface{}) {
+	fields := make(map[string]interface{})
+
+	fields["message"] = message
+	if caller != "" {
+		fields["caller"] = caller
+	}
+
+	if len(stack) > 0 {
+		fields["stack"] = strings.Join(stack, "\n")
+	}
+
+	i.addKeyValues(fields, keysValues)
+
+	// create point
+	p := influxdb.NewPoint(
+		measurement,
+		map[string]string{
+			"app":   i.app,
+			"scope": s,
+			"level": levelText[l],
+		},
+		fields,
+		time.Now())
+
+	// write asynchronously
+	i.writeAPI.WritePoint(p)
+}
+
+func (i *Influx) addKeyValues(fields map[string]interface{}, keysValues []interface{}) {
+	lenValues := len(keysValues)
+	if lenValues > 1 {
+		values := i.getBuffer()
+		defer i.putBuffer(values)
+
+		for i := 0; i < lenValues; i += 2 {
+			if key, ok := keysValues[i].(string); ok {
+				values.WriteString(key + "=" + fmt.Sprint(keysValues[i+1]) + "\n")
+			}
+		}
+
+		l := values.Len()
+		if l > 0 {
+			fields["values"] = values.Bytes()[:l-1]
+		}
+	}
 }

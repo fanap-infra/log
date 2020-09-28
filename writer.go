@@ -1,8 +1,8 @@
 package log
 
 type encoder interface {
-	Print(l Level, s string, caller string, stacks []string, message string)
-	Printv(l Level, s string, caller string, stacks []string, message string, keysValues []interface{})
+	Print(l Level, s string, caller string, stack []string, message string)
+	Printv(l Level, s string, caller string, stack []string, message string, keysValues []interface{})
 	close()
 }
 

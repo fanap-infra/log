@@ -16,46 +16,49 @@ type Influx struct {
 	pool     sync.Pool
 	client   influxdb.Client
 	writeAPI api.WriteAPI
+	app      string
 }
 
-func InfluxWriter(serverURL string, authToken string, org string, bucket string, caller bool, stack EnablerFunc, enabler EnablerFunc) *Writer {
+func InfluxWriter(serverURL string, authToken string, org string, bucket string, app string, caller bool, stack EnablerFunc, enabler EnablerFunc) *Writer {
 	i := &Influx{
 		pool: sync.Pool{New: func() interface{} {
 			b := bytes.NewBuffer(make([]byte, 150)) // buffer init with 150 size
 			b.Reset()
 			return b
 		}},
+		app: app,
 	}
 	i.Connect(serverURL, authToken, org, bucket)
 	return newWriter(enabler, stack, caller, i)
 }
 
-func (c *Influx) Connect(serverURL string, authToken string, org string, bucket string) {
-	c.client = influxdb.NewClient(serverURL, authToken)
-	c.writeAPI = c.client.WriteAPI(org, bucket) // https://docs.influxdata.com/influxdb/v2.0/write-data/
+func (i *Influx) Connect(serverURL string, authToken string, org string, bucket string) {
+	i.client = influxdb.NewClient(serverURL, authToken)
+	i.writeAPI = i.client.WriteAPI(org, bucket) // https://docs.influxdata.com/influxdb/v2.0/write-data/
 }
 
-func (c *Influx) close() {
+func (i *Influx) close() {
 	// Force all unwritten data to be sent
-	c.writeAPI.Flush()
+	i.writeAPI.Flush()
 	// Ensures background processes finishes
-	c.client.Close()
+	i.client.Close()
 }
 
-func (c *Influx) getBuffer() *bytes.Buffer {
-	return c.pool.Get().(*bytes.Buffer)
+func (i *Influx) getBuffer() *bytes.Buffer {
+	return i.pool.Get().(*bytes.Buffer)
 }
 
-func (c *Influx) putBuffer(b *bytes.Buffer) {
+func (i *Influx) putBuffer(b *bytes.Buffer) {
 	b.Reset()
-	c.pool.Put(b)
+	i.pool.Put(b)
 }
 
-func (c *Influx) Print(l Level, s string, caller string, stacks []string, message string) {
+func (i *Influx) Print(l Level, s string, caller string, stacks []string, message string) {
 	// create point
 	p := influxdb.NewPoint(
 		measurement,
 		map[string]string{
+			"app":   i.app,
 			"scope": s,
 			"level": levelText[l],
 		},
@@ -67,12 +70,12 @@ func (c *Influx) Print(l Level, s string, caller string, stacks []string, messag
 		time.Now())
 
 	// write asynchronously
-	c.writeAPI.WritePoint(p)
+	i.writeAPI.WritePoint(p)
 }
 
-func (c *Influx) Printv(l Level, s string, caller string, stacks []string, message string, keysValues []interface{}) {
-	fields := c.getBuffer()
-	defer c.putBuffer(fields)
+func (i *Influx) Printv(l Level, s string, caller string, stacks []string, message string, keysValues []interface{}) {
+	fields := i.getBuffer()
+	defer i.putBuffer(fields)
 
 	ln := len(keysValues)
 	if ln > 1 {
@@ -96,6 +99,7 @@ func (c *Influx) Printv(l Level, s string, caller string, stacks []string, messa
 	p := influxdb.NewPoint(
 		measurement,
 		map[string]string{
+			"app":   i.app,
 			"scope": s,
 			"level": levelText[l],
 		},
@@ -108,5 +112,5 @@ func (c *Influx) Printv(l Level, s string, caller string, stacks []string, messa
 		time.Now())
 
 	// write asynchronously
-	c.writeAPI.WritePoint(p)
+	i.writeAPI.WritePoint(p)
 }

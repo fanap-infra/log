@@ -63,7 +63,7 @@ func (i *Influx) Print(l Level, s string, caller string, stack []string, message
 	}
 
 	if len(stack) > 0 {
-		fields["stack"] = strings.Join(stack, "\n")
+		fields["stack"] = strings.Join(stack, "\r\n")
 	}
 
 	// create point
@@ -90,7 +90,7 @@ func (i *Influx) Printv(l Level, s string, caller string, stack []string, messag
 	}
 
 	if len(stack) > 0 {
-		fields["stack"] = strings.Join(stack, "\n")
+		fields["stack"] = strings.Join(stack, "\r\n")
 	}
 
 	i.addKeyValues(fields, keysValues)
@@ -118,7 +118,7 @@ func (i *Influx) addKeyValues(fields map[string]interface{}, keysValues []interf
 
 		for i := 0; i < lenValues; i += 2 {
 			if key, ok := keysValues[i].(string); ok {
-				values.WriteString(key + "=" + fmt.Sprint(keysValues[i+1]) + "\n")
+				values.WriteString(key + "=" + fmt.Sprint(keysValues[i+1]) + "\r\n")
 			}
 		}
 

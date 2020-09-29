@@ -113,6 +113,7 @@ func (c *Console) writeValue(b *bytes.Buffer, s string) {
 }
 
 func (c *Console) writeNewline(b *bytes.Buffer) {
+	b.WriteByte('\r')
 	b.WriteByte('\n')
 }
 
@@ -171,7 +172,7 @@ func (c *Console) Printv(l Level, scope string, caller string, stack []string, m
 	c.writeEndValues(buf)
 	if len(stack) > 0 {
 		for i := range stack {
-			buf.WriteString("\n    " + stack[i])
+			buf.WriteString("\r\n    " + stack[i])
 		}
 		c.writeNewline(buf)
 	}

@@ -2,8 +2,8 @@ package log
 
 import "bytes"
 
-func (c *consoleWriter) resetColor(b *bytes.Buffer) {
+func (c *Console) resetColor(b *bytes.Buffer) {
 }
 
-func (c *consoleWriter) setColor(b *bytes.Buffer, fg string) {
+func (c *Console) setColor(b *bytes.Buffer, fg string) {
 }

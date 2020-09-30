@@ -198,13 +198,14 @@ func (c *Console) Printv(l Level, scope string, caller string, stack []string, m
 	buf := c.getBuffer()
 	defer c.putBuffer(buf)
 
-	/*n :=*/
 	c.writeMessage(buf, l, scope, caller, message)
-	// c.writeAlign(messageAlign, n, buf)
+
 	lenValues := len(keysValues)
 	for i := 0; i < lenValues; i += 2 {
 		if key, ok := keysValues[i].(string); ok {
 			c.writeKey(buf, key)
+		} else {
+			c.writeKey(buf, "%KEY%")
 		}
 		c.writeValue(buf, fmt.Sprint(keysValues[i+1]))
 	}

@@ -116,15 +116,12 @@ func (i *Influx) addKeyValues(fields map[string]interface{}, keysValues []interf
 		values := i.getBuffer()
 		defer i.putBuffer(values)
 
-		for i := 0; i < lenValues; i += 2 {
-			if key, ok := keysValues[i].(string); ok {
-				values.WriteString(key + "=" + fmt.Sprint(keysValues[i+1]) + "\r\n")
-			}
+		// first key=value
+		values.WriteString(fmt.Sprintf("%v=%v", keysValues[0], keysValues[1]))
+		for i := 2; i < lenValues; i += 2 {
+			values.WriteString(fmt.Sprintf("\r\n%v=%v", keysValues[i], keysValues[i+1]))
 		}
 
-		l := values.Len()
-		if l > 0 {
-			fields["values"] = values.Bytes()[:l-1]
-		}
+		fields["values"] = values.Bytes()
 	}
 }

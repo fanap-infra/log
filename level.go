@@ -1,5 +1,7 @@
 package log
 
+import "strings"
+
 type Level int
 
 const (
@@ -13,3 +15,20 @@ const (
 )
 
 var levelText = []string{"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "PANIC"}
+var toLevel = map[string]Level{
+	"TRACE":   TraceLevel,
+	"DEBUG":   DebugLevel,
+	"INFO":    InfoLevel,
+	"WARN":    WarnLevel,
+	"WARNING": WarnLevel,
+	"ERR":     ErrorLevel,
+	"ERROR":   ErrorLevel,
+	"FATAL":   FatalLevel,
+	"PANIC":   PanicLevel,
+}
+
+// ToLevel map text of level to log.Level
+// Trace, Debug, Info, Warn or Warning, Error or Err, Fatal, Panic
+func ToLevel(level string) Level {
+	return toLevel[strings.ToUpper(level)]
+}
